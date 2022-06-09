@@ -11,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: '',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: ''),
     );
   }
 }
@@ -40,20 +41,14 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+          children: const <Widget>[
+            Center(child: Text('high'),),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){},
-        tooltip: 'Increment',
+        tooltip: 'Big Bazu',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
