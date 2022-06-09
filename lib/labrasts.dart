@@ -5,16 +5,16 @@ import 'package:just_audio/just_audio.dart';
 import 'package:xc/common.dart';
 import 'package:rxdart/rxdart.dart';
 
-void main() => runApp(const MyApp());
+// void main() => runApp(const MyApp());
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyAp extends StatefulWidget {
+  const MyAp({Key? key}) : super(key: key);
 
   @override
-  MyAppState createState() => MyAppState();
+  MyApState createState() => MyApState();
 }
 
-class MyAppState extends State<MyApp> with WidgetsBindingObserver {
+class MyApState extends State<MyAp> with WidgetsBindingObserver {
   final _player = AudioPlayer();
 
   @override
@@ -38,11 +38,13 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           print('A stream error occurred: $e'); //TODO: remove print statement
         });
     // Try to load audio from a source and catch any errors.
-    try {
+    try{
+      //TODO: Audio Source
       // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
       await _player.setAudioSource(AudioSource.uri(Uri.parse(
           "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3")));
     } catch (e) {
+      //TODO: Avoid Print Statements
       print("Error loading audio source: $e");
     }
   }
