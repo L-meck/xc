@@ -2,20 +2,27 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:xc/common.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'common.dart';
 
 // void main() => runApp(const MyApp());
 
-class MyAp extends StatefulWidget {
-  const MyAp({Key? key}) : super(key: key);
+class MyApp4 extends StatefulWidget {
+  const MyApp4({Key? key}) : super(key: key);
 
   @override
-  MyApState createState() => MyApState();
+  MyApp4State createState() => MyApp4State();
 }
 
-class MyApState extends State<MyAp> with WidgetsBindingObserver {
+class MyApp4State extends State<MyApp4> with WidgetsBindingObserver {
   final _player = AudioPlayer();
+  final _audioSource = LockCachingAudioSource(Uri.parse(
+    // Supports range requests:
+    "https://dovetail.prxu.org/70/66673fd4-6851-4b90-a762-7c0538c76626/CoryCombs_2021T_VO_Intro.mp3",
+    // Doesn't support range requests:
+    //"https://filesamples.com/samples/audio/mp3/sample4.mp3",
+  ));
 
   @override
   void initState() {
@@ -28,23 +35,18 @@ class MyApState extends State<MyAp> with WidgetsBindingObserver {
   }
 
   Future<void> _init() async {
-    // Inform the operating system of our app's audio attributes etc.
-    // We pick a reasonable default for an app that plays speech.
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.speech());
-    // Listen to errors during playback.
     _player.playbackEventStream.listen((event) {},
         onError: (Object e, StackTrace stackTrace) {
-          print('A stream error occurred: $e'); //TODO: remove print statement
-        },);
-    // Try to load audio from a source and catch any errors.
-    try{
-      //TODO: Audio Source
-      // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
-      await _player.setAudioSource(AudioSource.uri(Uri.parse(
-          "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3")));
+      //TODO: remove print
+          print('A stream error occurred: $e');
+        });
+    try {
+      //await _audioSource.clearCache();
+      await _player.setAudioSource(_audioSource);
     } catch (e) {
-      //TODO: Avoid Print Statements
+      //TODO: remove print
       print("Error loading audio source: $e");
     }
   }
@@ -71,12 +73,15 @@ class MyApState extends State<MyAp> with WidgetsBindingObserver {
   /// Collects the data useful for displaying in a seek bar, using a handy
   /// feature of rx_dart to combine the 3 streams of interest into one.
   Stream<PositionData> get _positionDataStream =>
-      Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+      Rx.combineLatest3<Duration, double, Duration?, PositionData>(
           _player.positionStream,
-          _player.bufferedPositionStream,
+          _audioSource.downloadProgressStream,
           _player.durationStream,
-              (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero));
+              (position, downloadProgress, reportedDuration) {
+            final duration = reportedDuration ?? Duration.zero;
+            final bufferedPosition = duration * downloadProgress;
+            return PositionData(position, bufferedPosition, duration);
+          });
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +109,14 @@ class MyApState extends State<MyAp> with WidgetsBindingObserver {
                     onChangeEnd: _player.seek,
                   );
                 },
+              ),
+              ElevatedButton(
+                onPressed: _audioSource.clearCache,
+                child: const Text('Clear cache'),
+              ),
+              ElevatedButton(
+                onPressed: _audioSource.clearCache,
+                child: const Text('Clear cache'),
               ),
             ],
           ),

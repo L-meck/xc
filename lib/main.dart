@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'caching.dart';
+import 'effects.dart';
 import 'labrasts.dart';
 
 void main() {
@@ -33,7 +35,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const MyAp()),
+            MaterialPageRoute(builder: (context) => const MyApep()),
           );
         },
         tooltip: 'Big Bazu',
